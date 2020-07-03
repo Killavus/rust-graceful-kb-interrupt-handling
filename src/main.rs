@@ -52,6 +52,8 @@ impl Drop for WorkerPool {
 fn main() {
     let worker_pool = WorkerPool::new();
     let discord = Discord::new(worker_pool.tx());
+    let dref = discord.clone();
+    ctrlc::set_handler(move || dref.shutdown());
 
     discord.start();
     eprintln!("Good bye!");
