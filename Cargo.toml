@@ -1,5 +1,5 @@
 [package]
-name = "thread-join-test"
+name = "rust-graceful-kb-interrupt-handling"
 version = "0.1.0"
 authors = ["Marcin Grzywaczewski <killavus@gmail.com>"]
 edition = "2018"
