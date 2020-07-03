@@ -1,6 +1,12 @@
-pub struct Discord { finish: AtomicBool }
-use std::sync::{atomic::{AtomicBool, Ordering}, mpsc::Sender, Arc};
+pub struct Discord {
+    finish: AtomicBool,
+}
 use super::Command;
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    mpsc::Sender,
+    Arc,
+};
 
 impl Discord {
     pub fn new(_tx: Sender<Command>) -> Arc<Self> {
@@ -14,6 +20,6 @@ impl Discord {
     }
 
     pub fn shutdown(&self) {
-        self.finish.store(true, Ordering::Relaxed); 
+        self.finish.store(true, Ordering::Relaxed);
     }
 }

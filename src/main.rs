@@ -1,6 +1,6 @@
-use std::thread::{JoinHandle, self};
-use std::sync::mpsc::{channel, Sender};
 use rayon;
+use std::sync::mpsc::{channel, Sender};
+use std::thread::{self, JoinHandle};
 
 use dummy_discord::Discord;
 
@@ -10,15 +10,18 @@ pub enum Command {}
 
 struct WorkerPool {
     receiver: Option<JoinHandle<()>>,
-    sender: Option<Sender<Command>>
+    sender: Option<Sender<Command>>,
 }
 
 impl WorkerPool {
     fn new() -> Self {
         let (tx, rx) = channel();
 
-        let receiver_thread = thread::spawn(move || {		
-            let pool = rayon::ThreadPoolBuilder::new().num_threads(8).build().unwrap();
+        let receiver_thread = thread::spawn(move || {
+            let pool = rayon::ThreadPoolBuilder::new()
+                .num_threads(8)
+                .build()
+                .unwrap();
 
             while let Ok(_command) = rx.recv() {
                 /* do matching logic */
@@ -29,7 +32,7 @@ impl WorkerPool {
 
         Self {
             receiver: Some(receiver_thread),
-            sender: Some(tx)
+            sender: Some(tx),
         }
     }
 
@@ -43,9 +46,9 @@ impl WorkerPool {
 /* Ensure receiver thread is joined when WorkerPool goes out of scope. */
 impl Drop for WorkerPool {
     fn drop(&mut self) {
-      self.sender.take();
-      self.receiver.take().and_then(|handle| handle.join().ok());
-      eprintln!("dropped worker pool receiver thread");
+        self.sender.take();
+        self.receiver.take().and_then(|handle| handle.join().ok());
+        eprintln!("dropped worker pool receiver thread");
     }
 }
 
